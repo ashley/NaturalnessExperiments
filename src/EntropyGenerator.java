@@ -85,11 +85,10 @@ public class EntropyGenerator {
 		for(ASTNode node: stmts){
 			final TreeNode<TSGNode> tsgTree = TSGNode.convertTree(((AbstractJavaTreeExtractor) model.getTreeExtractor()).getTree(node), 0);
 			double prob = probabilityComputer.getLog2ProbabilityOf(tsgTree);
-			double entropy = -prob * Math.exp(prob);
-			ASTEntropy.put(node, entropy);
+			ASTEntropy.put(node, prob);
 			
 			System.out.println(node);
-			System.out.println(entropy);
+			System.out.println(prob);
 		}
 		return ASTEntropy;
 		
