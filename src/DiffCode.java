@@ -30,7 +30,10 @@ public class DiffCode {
 		List<ASTNode> stmts = EntropyGenerator.parseAST(new File(args[0]));
 		for(SourceCodeChange change: uniqueChange){
 			for(ASTNode node: stmts){
-				if(change.getChangedEntity().getOriginalNode().equals(node)){
+				if(change.getChangedEntity().getStartPosition() == node.getStartPosition()){
+					ASTNode ast = change.getChangedEntity().getOriginalNode();
+					ASTNode stmt = node;
+					System.out.println(ast.equals(stmt));
 					System.out.println(node);
 				}
 			}

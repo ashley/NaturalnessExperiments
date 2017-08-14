@@ -1,4 +1,4 @@
-Loaded default properties at Sun Aug 13 18:14:03 EDT 2017
+Loaded default properties at Mon Aug 14 18:33:23 EDT 2017
 Serializer.name=Kryo
 AbstractTSGSampler.LogProbCalculationInteval=1.0
 AbstractTSGSampler.CalculateLogProb=true

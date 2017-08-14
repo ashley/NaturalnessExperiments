@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashMap;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayAccess;
@@ -61,7 +59,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import clegoues.genprog4java.main.Configuration;
 import codemining.ast.TreeNode;
 import codemining.ast.java.AbstractJavaTreeExtractor;
 import codemining.java.codeutils.JavaASTExtractor;
@@ -78,9 +75,19 @@ public class EntropyGenerator {
 			System.err.println("<Path to Model> <path to Source Code File> <path to output");
 			System.exit(-1);
 		}
-		TSGrammar<TSGNode> model = importModel(args[0]);
-		List<ASTNode> sourceCode = parseAST(new File(args[1]));
-		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, args[2]);
+		String path = "/Users/ashleychen/Desktop/EntropyLocalization/Copies/Lang";
+		TSGrammar<TSGNode> model = importModel("/Users/ashleychen/Desktop/models_defects4j/lang"+16+"b.tsg");
+		for(int i=36;i<66;i++){
+			File directoryPath = new File(path+"/"+i+"/b");
+			System.out.println(directoryPath);
+			File[] files = directoryPath.listFiles();
+			for(File file: files){
+				List<ASTNode> sourceCode = parseAST(file);
+				HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, "/Users/ashleychen/Desktop/lang/lang"+i);
+			}
+		}
+		
+		
 		
 	}
 
