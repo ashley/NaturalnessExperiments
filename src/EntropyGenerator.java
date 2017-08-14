@@ -72,6 +72,10 @@ import codemining.util.serialization.Serializer;
 public class EntropyGenerator {
 	
 	public static void main(String[] args) throws SerializationException, IOException{
+		if(args.length < 2){
+			System.err.println("<Path to Model> <path to Source Code File>");
+			System.exit(-1);
+		}
 		TSGrammar<TSGNode> model = importModel(args[0]);
 		List<ASTNode> sourceCode = parseAST(new File(args[1]));
 		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode);
