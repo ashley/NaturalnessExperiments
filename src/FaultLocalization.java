@@ -13,12 +13,16 @@ public class FaultLocalization {
 	public static void main(String[] args) throws SerializationException, IOException{
 		String path = "/Users/ashleychen/Desktop/EntropyLocalization/Copies/Lang";
 		TSGrammar<TSGNode> model = EntropyGenerator.importModel("/Users/ashleychen/Desktop/models_defects4j/lang"+16+"b.tsg");
-		for(int i=36;i<66;i++){
-			File directoryPath = new File(path+"/"+i+"/b");
-			System.out.println(directoryPath);
-			File[] files = directoryPath.listFiles();
-			for(File file: files){
-				HashMap<ASTNode, Double> entropyResults = EntropyGenerator.simpleAggregation(model, file, "/Users/ashleychen/Desktop/lang/lang"+i);
+		for(int i=36;i<37;i++){
+			File bDirectoryPath = new File(path+"/"+i+"/b");
+			File fDirectoryPath = new File(path+"/"+i+"/f");
+			System.out.println(fDirectoryPath);
+			File[] bFiles = bDirectoryPath.listFiles();
+			File[] fFiles = fDirectoryPath.listFiles();
+			for(int fileIndex=0;fileIndex<bDirectoryPath.length();fileIndex++){
+				HashMap<ASTNode, Double> entropyResults = EntropyGenerator.simpleAggregation(model, bFiles[fileIndex], "/Users/ashleychen/Desktop/lang/lang"+i);
+				String[] arguments = {bFiles[fileIndex].getAbsolutePath(),fFiles[fileIndex].getAbsolutePath()};
+				DiffCode.getDiffASTs(arguments);
 			}
 		}
 	}
