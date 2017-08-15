@@ -105,6 +105,7 @@ public class EntropyGenerator {
 			index++;
 			
 		}
+		
 		//System.out.println(writeName);
 		//System.out.println(writeProb);
 		//writeCalculation(writeName, writeProb, filePath);

@@ -27,8 +27,8 @@ public class DiffCode {
 			if(!change.getChangeType().toString().substring(0,7).equals("COMMENT")){
 				String change_name = change.toString();
 				if(change_name.substring(0,6).equals("Update")){
-					System.out.println(change.getChangedEntity().getOriginalNode());
-					System.out.println(change.getChangedEntity().getStartPosition());
+					//System.out.println(change.getChangedEntity().getOriginalNode());
+					//System.out.println(change.getChangedEntity().getStartPosition());
 					uniqueChange.add(change);
 					startingPositions.add(change.getChangedEntity().getStartPosition());
 				}
@@ -46,7 +46,7 @@ public class DiffCode {
 				if(change.getChangedEntity().getStartPosition() == node.getStartPosition()){
 					ASTNode ast = change.getChangedEntity().getOriginalNode();
 					ASTNode stmt = node;
-					System.out.println(node);
+					//System.out.println(node);
 					int num = cu.getLineNumber(startingPositions.get(i));
 					filteredStmts.put(num, node);
 				}

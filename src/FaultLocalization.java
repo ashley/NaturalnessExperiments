@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -13,16 +14,40 @@ public class FaultLocalization {
 	public static void main(String[] args) throws SerializationException, IOException{
 		String path = "/Users/ashleychen/Desktop/EntropyLocalization/Copies/Lang";
 		TSGrammar<TSGNode> model = EntropyGenerator.importModel("/Users/ashleychen/Desktop/models_defects4j/lang"+16+"b.tsg");
-		for(int i=36;i<37;i++){
+		for(int i=1;i<2;i++){
 			File bDirectoryPath = new File(path+"/"+i+"/b");
 			File fDirectoryPath = new File(path+"/"+i+"/f");
 			System.out.println(fDirectoryPath);
-			File[] bFiles = bDirectoryPath.listFiles();
-			File[] fFiles = fDirectoryPath.listFiles();
-			for(int fileIndex=0;fileIndex<bDirectoryPath.length();fileIndex++){
+			File[] bFiles = bDirectoryPath.listFiles(new FilenameFilter() {
+		        @Override
+		        public boolean accept(File dir, String name) {
+		            return name.toLowerCase().endsWith(".java");
+		        }
+		    });
+			File[] fFiles = fDirectoryPath.listFiles(new FilenameFilter() {
+		        @Override
+		        public boolean accept(File dir, String name) {
+		            return name.toLowerCase().endsWith(".java");
+		        }
+		    });
+			for(int fileIndex=0;fileIndex<bFiles.length;fileIndex++){
 				HashMap<ASTNode, Double> entropyResults = EntropyGenerator.simpleAggregation(model, bFiles[fileIndex], "/Users/ashleychen/Desktop/lang/lang"+i);
 				String[] arguments = {bFiles[fileIndex].getAbsolutePath(),fFiles[fileIndex].getAbsolutePath()};
-				DiffCode.getDiffASTs(arguments);
+				HashMap<Integer,ASTNode> changeASTs = DiffCode.getDiffASTs(arguments);
+				for (HashMap.Entry<Integer, ASTNode> entry : changeASTs.entrySet()) {
+					System.err.println(entry);
+				    //System.out.println(entropyResults.containsKey(value));
+				    /*
+					for(HashMap.Entry<ASTNode, Double> tree: entropyResults.entrySet()){
+				    	if(tree.getKey().getStartPosition() == entry.getKey()){
+				    		System.out.println("Found");
+				    	}
+				    }
+				    */
+				}
+				for(HashMap.Entry<ASTNode, Double> entry : entropyResults.entrySet()){
+					System.out.println(entry.getKey().getStartPosition());
+				}
 			}
 		}
 	}
