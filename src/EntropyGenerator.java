@@ -72,23 +72,19 @@ public class EntropyGenerator {
 	
 	public static void main(String[] args) throws SerializationException, IOException{
 		if(args.length < 2){
-			System.err.println("<Path to Model> <path to Source Code File> <path to output");
+			System.err.println("<Path to Model> <path to Source Code File>");
 			System.exit(-1);
 		}
-		String path = "/Users/ashleychen/Desktop/EntropyLocalization/Copies/Lang";
-		TSGrammar<TSGNode> model = importModel("/Users/ashleychen/Desktop/models_defects4j/lang"+16+"b.tsg");
-		for(int i=36;i<66;i++){
-			File directoryPath = new File(path+"/"+i+"/b");
-			System.out.println(directoryPath);
-			File[] files = directoryPath.listFiles();
-			for(File file: files){
-				List<ASTNode> sourceCode = parseAST(file);
-				HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, "/Users/ashleychen/Desktop/lang/lang"+i);
-			}
-		}
+		TSGrammar<TSGNode> model = importModel(args[0]);
+		List<ASTNode> sourceCode = parseAST(new File(args[1]));
+		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, "");
 		
-		
-		
+	}
+	
+	public static HashMap<ASTNode, Double> simpleAggregation(TSGrammar<TSGNode> model, File file, String filePath) throws SerializationException, IOException{
+		List<ASTNode> sourceCode = parseAST(file);
+		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, filePath);
+		return entropyResults;
 	}
 
 	public static HashMap<ASTNode, Double> generateEntropy(TSGrammar<TSGNode> model, List<ASTNode> stmts, String filePath) throws IOException{
@@ -109,9 +105,9 @@ public class EntropyGenerator {
 			index++;
 			
 		}
-		System.out.println(writeName);
-		System.out.println(writeProb);
-		writeCalculation(writeName, writeProb, filePath);
+		//System.out.println(writeName);
+		//System.out.println(writeProb);
+		//writeCalculation(writeName, writeProb, filePath);
 		return ASTEntropy;
 		
 	}
