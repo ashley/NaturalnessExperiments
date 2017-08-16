@@ -69,22 +69,23 @@ import codemining.util.serialization.ISerializationStrategy.SerializationExcepti
 import codemining.util.serialization.Serializer;
 
 public class EntropyGenerator {
+	private HashMap<ASTNode, Double> entropyResults;
 	
-	public static void main(String[] args) throws SerializationException, IOException{
-		if(args.length < 2){
-			System.err.println("<Path to Model> <path to Source Code File>");
-			System.exit(-1);
-		}
-		TSGrammar<TSGNode> model = importModel(args[0]);
-		List<ASTNode> sourceCode = parseAST(new File(args[1]));
-		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, "");
+	EntropyGenerator(String grammarPath, String sourceCodePath) throws SerializationException, IOException{
+		//<Path to Model> <path to Source Code File>
+		TSGrammar<TSGNode> model = importModel(grammarPath);
+		List<ASTNode> sourceCode = parseAST(new File(sourceCodePath));
+		this.entropyResults = generateEntropy(model, sourceCode, "");
 		
 	}
 	
-	public static HashMap<ASTNode, Double> simpleAggregation(TSGrammar<TSGNode> model, File file, String filePath) throws SerializationException, IOException{
+	EntropyGenerator(TSGrammar<TSGNode> model, File file, String filePath) throws SerializationException, IOException{
 		List<ASTNode> sourceCode = parseAST(file);
-		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode, filePath);
-		return entropyResults;
+		this.entropyResults = generateEntropy(model, sourceCode, filePath);
+	}
+	
+	public HashMap<ASTNode, Double> getEntropy(){
+		return this.entropyResults;
 	}
 
 	public static HashMap<ASTNode, Double> generateEntropy(TSGrammar<TSGNode> model, List<ASTNode> stmts, String filePath) throws IOException{

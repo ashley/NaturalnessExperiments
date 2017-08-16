@@ -18,22 +18,21 @@ public class FaultLocalization {
 			File bDirectoryPath = new File(path+"/"+i+"/b");
 			File fDirectoryPath = new File(path+"/"+i+"/f");
 			System.out.println(fDirectoryPath);
-			File[] bFiles = bDirectoryPath.listFiles(new FilenameFilter() {
+			FilenameFilter javaFilter = new FilenameFilter() {
 		        @Override
 		        public boolean accept(File dir, String name) {
 		            return name.toLowerCase().endsWith(".java");
 		        }
-		    });
-			File[] fFiles = fDirectoryPath.listFiles(new FilenameFilter() {
-		        @Override
-		        public boolean accept(File dir, String name) {
-		            return name.toLowerCase().endsWith(".java");
-		        }
-		    });
+		    };
+			File[] bFiles = bDirectoryPath.listFiles(javaFilter);
+			File[] fFiles = fDirectoryPath.listFiles(javaFilter);
 			for(int fileIndex=0;fileIndex<bFiles.length;fileIndex++){
-				HashMap<ASTNode, Double> entropyResults = EntropyGenerator.simpleAggregation(model, bFiles[fileIndex], "/Users/ashleychen/Desktop/lang/lang"+i);
+				EntropyGenerator eg = new EntropyGenerator(model, bFiles[fileIndex], "/Users/ashleychen/Desktop/lang/lang"+i);
+				HashMap<ASTNode, Double> entropyResults = eg.getEntropy();
+				
 				String[] arguments = {bFiles[fileIndex].getAbsolutePath(),fFiles[fileIndex].getAbsolutePath()};
 				HashMap<Integer,ASTNode> changeASTs = DiffCode.getDiffASTs(arguments);
+				
 				for (HashMap.Entry<Integer, ASTNode> entry : changeASTs.entrySet()) {
 					System.err.println(entry);
 				    //System.out.println(entropyResults.containsKey(value));
