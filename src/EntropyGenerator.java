@@ -1,10 +1,10 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashMap;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayAccess;
@@ -59,7 +59,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import clegoues.genprog4java.main.Configuration;
 import codemining.ast.TreeNode;
 import codemining.ast.java.AbstractJavaTreeExtractor;
 import codemining.java.codeutils.JavaASTExtractor;
@@ -70,30 +69,49 @@ import codemining.util.serialization.ISerializationStrategy.SerializationExcepti
 import codemining.util.serialization.Serializer;
 
 public class EntropyGenerator {
+	private HashMap<ASTNode, Double> entropyResults;
 	
-	public static void main(String[] args) throws SerializationException, IOException{
-		if(args.length < 2){
-			System.err.println("<Path to Model> <path to Source Code File>");
-			System.exit(-1);
-		}
-		TSGrammar<TSGNode> model = importModel(args[0]);
-		List<ASTNode> sourceCode = parseAST(new File(args[1]));
-		HashMap<ASTNode, Double> entropyResults = generateEntropy(model, sourceCode);
+	EntropyGenerator(String grammarPath, String sourceCodePath) throws SerializationException, IOException{
+		//<Path to Model> <path to Source Code File>
+		TSGrammar<TSGNode> model = importModel(grammarPath);
+		List<ASTNode> sourceCode = parseAST(new File(sourceCodePath));
+		this.entropyResults = generateEntropy(model, sourceCode, "");
 		
 	}
+	
+	EntropyGenerator(TSGrammar<TSGNode> model, File file, String filePath) throws SerializationException, IOException{
+		List<ASTNode> sourceCode = parseAST(file);
+		this.entropyResults = generateEntropy(model, sourceCode, filePath);
+	}
+	
+	public HashMap<ASTNode, Double> getEntropy(){
+		return this.entropyResults;
+	}
 
-	public static HashMap<ASTNode, Double> generateEntropy(TSGrammar<TSGNode> model, List<ASTNode> stmts){
+	public static HashMap<ASTNode, Double> generateEntropy(TSGrammar<TSGNode> model, List<ASTNode> stmts, String filePath) throws IOException{
 		HashMap<ASTNode, Double> ASTEntropy = new HashMap<ASTNode, Double>();
+		ArrayList<String> writeName = new ArrayList<String>();
+		ArrayList<String> writeProb = new ArrayList<String>();
 		final TreeProbabilityComputer<TSGNode> probabilityComputer = 
 				new TreeProbabilityComputer<TSGNode>(model, false, TreeProbabilityComputer.TSGNODE_MATCHER);
+		int index = 0;
 		for(ASTNode node: stmts){
 			final TreeNode<TSGNode> tsgTree = TSGNode.convertTree(((AbstractJavaTreeExtractor) model.getTreeExtractor()).getTree(node), 0);
 			double prob = probabilityComputer.getLog2ProbabilityOf(tsgTree);
 			ASTEntropy.put(node, prob);
 			
-			System.out.println(node);
-			System.out.println(prob);
+			//Print statement for creating file for R
+			if(!filePath.equals("")){
+				writeName.add("Tree " + index + ": " + node);
+				writeProb.add(index + ", " + prob);
+			}
+			index++;
+			
 		}
+		
+		//System.out.println(writeName);
+		//System.out.println(writeProb);
+		//writeCalculation(writeName, writeProb, filePath);
 		return ASTEntropy;
 		
 	}
@@ -109,6 +127,23 @@ public class EntropyGenerator {
 		final ASTNode u = astExtractor.getAST(sourceCode);
 		return decomposeASTNode(u);
 		
+	}
+	
+	public static void writeCalculation(ArrayList<String> name, ArrayList<String> prob, String filePath) throws IOException{
+		FileWriter writerEntropy = new FileWriter(filePath+"_Entropy.txt"); 
+		for(String str: prob) {
+			writerEntropy.write(str);
+			writerEntropy.write("\n");
+		}
+		writerEntropy.close();
+		
+		FileWriter writerNames = new FileWriter(filePath+"_Names.txt"); 
+		for(String str: name) {
+			writerNames.write(str);
+			writerNames.write("\n");
+			
+		}
+		writerNames.close();
 	}
 	
 	/*

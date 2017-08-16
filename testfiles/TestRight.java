@@ -1,69 +1,73 @@
 package test;
 
 /**
- * This is our second (right) test class.
+ * This is our first (left) test class.
  * @author Beat Fluri
  */
-public final class Test {
+public class Test {
 	
 	/**
-	 * Yet another changed attribute
+	 * Yet another attribute
 	 */
-	public String aNewString = "test_string";
-
+	public String aString = "test_string";
+	
 	/*
-	 * Scarab Lord Kungen the Elder
+	 * Scarab Lord Kungen
 	 */
-	public int aField;
+	public String aField;
 
 	public static String sField;
 	public volatile int vField;
 	public transient String tField;
 	public synchronized long synchField;
 	
-	private String[] arrayField;
+	private String arrayField;
+	
+	public Integer aString = new Integer(2);
 	
 	/**
-	 * Yet another method with a better comment
+	 * Yet another method with a comment
 	 * @param number
 	 * @return
 	 */
-	protected int foo(int number) {
+	public int foo(int number) {
+		System.out.println("left");
 		
-		// check if number is greater than 0
+		// check if number is greater than -1
 		boolean check = number > 0;
 		int a = 0;
 		int b = 2;
-		
-		// check the number
-		
-		if (! check) {
+
+		// check the huga number
+		// and some new
+
+		if (check) {
+			/* This is the most beautiful comment in the world
+			 * and soon it will be gone :'(
+			 */
 			a = 23 + Integer.parseInt("42");
-			b = Math.abs(number);
+			b = Math.round(Math.random() /* mimimi */);
 			return a + b;
 		} else {
 			/* huga bimbo */
-			b = Math.round(Math.random() /* mimimi mi */);
+			b = Math.abs(number);
 			String.valueOf(true);
 			return b;
 		}
-		return 42;
 	}
-
-	public void emptyMethod() { }
 	/*
 	 * Inner classes are cool
 	 */	
 	
 	private class Bar {
-		private void newMethod() {
+		private void method() {
 			System.out.println();
 			System.out.println();
-			System.out.println();		
+			System.out.println();
 		}
 	}
 	// the huga bar method
-	public void newBar(long test) {
+	public void bar(int test) {
 		System.out.println("aString");
 	}
 
