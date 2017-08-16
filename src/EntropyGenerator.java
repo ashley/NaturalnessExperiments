@@ -101,8 +101,10 @@ public class EntropyGenerator {
 			ASTEntropy.put(node, prob);
 			
 			//Print statement for creating file for R
-			writeName.add("Tree " + index + ": " + node);
-			writeProb.add(index + ", " + prob);
+			if(!filePath.equals("")){
+				writeName.add("Tree " + index + ": " + node);
+				writeProb.add(index + ", " + prob);
+			}
 			index++;
 			
 		}
