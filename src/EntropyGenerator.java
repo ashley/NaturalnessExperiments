@@ -2,9 +2,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayAccess;
@@ -59,6 +62,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import cc.mallet.util.CollectionUtils;
 import codemining.ast.TreeNode;
 import codemining.ast.java.AbstractJavaTreeExtractor;
 import codemining.java.codeutils.JavaASTExtractor;
@@ -80,12 +84,23 @@ public class EntropyGenerator {
 	}
 	
 	EntropyGenerator(TSGrammar<TSGNode> model, File file, String filePath) throws SerializationException, IOException{
-		List<ASTNode> sourceCode = parseAST(file);
-		this.entropyResults = generateEntropy(model, sourceCode, filePath);
+		List<FaultExpression> sourceCode = convertAST(file);
+		sourceCode = generateEntropyAll(model, sourceCode);
 	}
 	
 	public HashMap<ASTNode, Double> getEntropy(){
 		return this.entropyResults;
+	}
+	
+	public static List<FaultExpression> generateEntropyAll(TSGrammar<TSGNode> model, List<FaultExpression> stmts){
+		final TreeProbabilityComputer<TSGNode> probabilityComputer = 
+				new TreeProbabilityComputer<TSGNode>(model, false, TreeProbabilityComputer.TSGNODE_MATCHER);
+		for(FaultExpression node: stmts){
+			final TreeNode<TSGNode> tsgTree = TSGNode.convertTree(((AbstractJavaTreeExtractor) model.getTreeExtractor()).getTree(node.getNode()), 0);
+			double prob = probabilityComputer.getLog2ProbabilityOf(tsgTree);
+			node.setEntropy(prob);
+		}
+		return stmts;
 	}
 
 	public static HashMap<ASTNode, Double> generateEntropy(TSGrammar<TSGNode> model, List<ASTNode> stmts, String filePath) throws IOException{
@@ -127,6 +142,15 @@ public class EntropyGenerator {
 		final ASTNode u = astExtractor.getAST(sourceCode);
 		return decomposeASTNode(u);
 		
+	}
+	
+	public static List<FaultExpression> convertAST(File sourceCode) throws IOException{
+		List<ASTNode> stmts = parseAST(sourceCode);
+		List<FaultExpression> convertedStmts = null;
+		for(ASTNode node: stmts){
+			convertedStmts.add(new FaultExpression(node));
+		}
+		return convertedStmts;
 	}
 	
 	public static void writeCalculation(ArrayList<String> name, ArrayList<String> prob, String filePath) throws IOException{

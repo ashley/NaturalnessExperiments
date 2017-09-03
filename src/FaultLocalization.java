@@ -14,10 +14,21 @@ public class FaultLocalization {
 	public static void main(String[] args) throws SerializationException, IOException{
 		String path = "/Users/ashleychen/Desktop/EntropyLocalization/Copies/Lang";
 		TSGrammar<TSGNode> model = EntropyGenerator.importModel("/Users/ashleychen/Desktop/models_defects4j/lang"+16+"b.tsg");
+		localExperiment(model);
+	}
+	
+	public static void localExperiment(TSGrammar<TSGNode> model) throws IOException{
+		String[] arguments = {"testfiles/ClassWithComments.java","testfiles/ClassWithComments2.java"};
+		HashMap<Integer,ASTNode> changeASTs = DiffCode.getDiffASTs(arguments);
+	}
+	
+	public static void defects4jExperiment(String path, TSGrammar<TSGNode> model) throws SerializationException, IOException{
+		//Prototype for one bug in lang
 		int i = 1;	
 		File bDirectoryPath = new File(path+"/"+i+"/b");
 		File fDirectoryPath = new File(path+"/"+i+"/f");
-		System.out.println(fDirectoryPath);
+		
+		//Accept java files
 		FilenameFilter javaFilter = new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
@@ -26,6 +37,8 @@ public class FaultLocalization {
 		};
 		File[] bFiles = bDirectoryPath.listFiles(javaFilter);
 		File[] fFiles = fDirectoryPath.listFiles(javaFilter);
+		
+		//files changed in first bug
 		for(int fileIndex=0;fileIndex<bFiles.length;fileIndex++){
 			EntropyGenerator eg = new EntropyGenerator(model, bFiles[fileIndex], "/Users/ashleychen/Desktop/lang/lang"+i);
 			HashMap<ASTNode, Double> entropyResults = eg.getEntropy();

@@ -19,16 +19,22 @@ import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureNode;
 
 public class DiffCode {
 	public static HashMap<Integer, ASTNode> getDiffASTs(String[] args) throws IOException{
+		//CD process
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
 		StructureNode outcome = distiller.extractClassifiedSourceCodeChanges(new File(args[0]), new File(args[1]));
+		
+		//CD information
 		ArrayList<SourceCodeChange> uniqueChange = new ArrayList<SourceCodeChange>();
 		ArrayList<Integer> startingPositions = new ArrayList<Integer>();
+		
 		for(SourceCodeChange change: distiller.getSourceCodeChanges()){
+			//Check if change is not a comment //TODO Figure out what to do with these comments
 			if(!change.getChangeType().toString().substring(0,7).equals("COMMENT")){
 				String change_name = change.toString();
+				//Check if change is an update (only checking changes in syntax for now)
 				if(change_name.substring(0,6).equals("Update")){
-					//System.out.println(change.getChangedEntity().getOriginalNode());
-					//System.out.println(change.getChangedEntity().getStartPosition());
+					System.out.println("originalNode: " + change.getChangedEntity().getOriginalNode());
+					System.out.println("startingPosition: "  +change.getChangedEntity().getStartPosition());
 					uniqueChange.add(change);
 					startingPositions.add(change.getChangedEntity().getStartPosition());
 				}
@@ -37,18 +43,24 @@ public class DiffCode {
 		
 		CompilationUnit cu = createAST(args[0]);
 		
+		//FaultLocalization information
 		List<ASTNode> stmts = EntropyGenerator.parseAST(new File(args[0]));
+		//Stored information
 		HashMap<Integer, ASTNode> filteredStmts = new HashMap<Integer, ASTNode>();
+		
+		//For every change
 		for(int i=0;i<uniqueChange.size();i++){
 			SourceCodeChange change = uniqueChange.get(i);
 			Integer position = startingPositions.get(i);
+			//Traverse through all stmts in the bFile
 			for(ASTNode node: stmts){
-				if(change.getChangedEntity().getStartPosition() == node.getStartPosition()){
+				if(position == node.getStartPosition()){
 					ASTNode ast = change.getChangedEntity().getOriginalNode();
+					System.out.println("found: " + node);
 					ASTNode stmt = node;
-					//System.out.println(node);
 					int num = cu.getLineNumber(startingPositions.get(i));
 					filteredStmts.put(num, node);
+					break;
 				}
 			}
 		}
