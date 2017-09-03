@@ -8,6 +8,7 @@ public class FaultExpression {
 	
 	FaultExpression(ASTNode node){
 		node = node;
+		position = node.getStartPosition();
 	}
 	
 	void setPosition(int pos){
