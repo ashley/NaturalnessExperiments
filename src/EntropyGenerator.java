@@ -146,7 +146,7 @@ public class EntropyGenerator {
 	
 	public static List<FaultExpression> convertAST(File sourceCode) throws IOException{
 		List<ASTNode> stmts = parseAST(sourceCode);
-		List<FaultExpression> convertedStmts = null;
+		List<FaultExpression> convertedStmts = new ArrayList<FaultExpression>();
 		for(ASTNode node: stmts){
 			convertedStmts.add(new FaultExpression(node));
 		}

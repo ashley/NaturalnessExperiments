@@ -1,14 +1,26 @@
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
+
 public class FaultExpression {
 	private ASTNode node;
 	private int position;
 	private double entropy;
 	private int changeID;
 	
-	FaultExpression(ASTNode node){
-		node = node;
+	FaultExpression(ASTNode n){
+		node = n;
 		position = node.getStartPosition();
+	}
+	
+	FaultExpression(SourceCodeChange change){
+		node = change.getChangedEntity().getOriginalNode();
+		position = change.getChangedEntity().getStartPosition();
+	}
+	
+	@Override
+	public String toString(){
+		return node.toString();
 	}
 	
 	void setPosition(int pos){

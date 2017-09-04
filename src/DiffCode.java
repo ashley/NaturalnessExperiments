@@ -24,19 +24,16 @@ public class DiffCode {
 		StructureNode outcome = distiller.extractClassifiedSourceCodeChanges(new File(args[0]), new File(args[1]));
 		
 		//CD information
-		ArrayList<SourceCodeChange> uniqueChange = new ArrayList<SourceCodeChange>();
-		ArrayList<Integer> startingPositions = new ArrayList<Integer>();
+		List<FaultExpression> uniqueChanges = new ArrayList<FaultExpression>();
 		
 		for(SourceCodeChange change: distiller.getSourceCodeChanges()){
 			//Check if change is not a comment //TODO Figure out what to do with these comments
 			if(!change.getChangeType().toString().substring(0,7).equals("COMMENT")){
-				String change_name = change.toString();
 				//Check if change is an update (only checking changes in syntax for now)
-				if(change_name.substring(0,6).equals("Update")){
+				if(change.toString().substring(0,6).equals("Update")){
 					System.out.println("originalNode: " + change.getChangedEntity().getOriginalNode());
 					System.out.println("startingPosition: "  +change.getChangedEntity().getStartPosition());
-					uniqueChange.add(change);
-					startingPositions.add(change.getChangedEntity().getStartPosition());
+					uniqueChanges.add(new FaultExpression(change));
 				}
 			}
 		}
@@ -44,22 +41,18 @@ public class DiffCode {
 		CompilationUnit cu = createAST(args[0]);
 		
 		//FaultLocalization information
-		List<ASTNode> stmts = EntropyGenerator.parseAST(new File(args[0]));
+		List<FaultExpression> filestmts = EntropyGenerator.convertAST(new File(args[0]));
 		//Stored information
 		HashMap<Integer, ASTNode> filteredStmts = new HashMap<Integer, ASTNode>();
 		
 		//For every change
-		for(int i=0;i<uniqueChange.size();i++){
-			SourceCodeChange change = uniqueChange.get(i);
-			Integer position = startingPositions.get(i);
-			//Traverse through all stmts in the bFile
-			for(ASTNode node: stmts){
-				if(position == node.getStartPosition()){
-					ASTNode ast = change.getChangedEntity().getOriginalNode();
-					System.out.println("found: " + node);
-					ASTNode stmt = node;
-					int num = cu.getLineNumber(startingPositions.get(i));
-					filteredStmts.put(num, node);
+		for(FaultExpression stmt : uniqueChanges){
+			for(FaultExpression fileStmt: filestmts){
+				if(stmt.getPosition() == fileStmt.getPosition()){
+					//FIXME fileStmt's node is sometimes node for some reason
+					System.out.println("found: " + fileStmt);
+					//int num = cu.getLineNumber(startingPositions.get(i));
+					//filteredStmts.put(num, node);
 					break;
 				}
 			}
