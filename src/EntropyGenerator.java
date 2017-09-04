@@ -83,6 +83,10 @@ public class EntropyGenerator {
 		
 	}
 	
+	EntropyGenerator(TSGrammar<TSGNode> model, List<FaultExpression> stmts) throws SerializationException, IOException{
+		List<FaultExpression> expressions = generateEntropyAll(model, stmts);
+	}
+	
 	EntropyGenerator(TSGrammar<TSGNode> model, File file, String filePath) throws SerializationException, IOException{
 		List<FaultExpression> sourceCode = convertAST(file);
 		sourceCode = generateEntropyAll(model, sourceCode);

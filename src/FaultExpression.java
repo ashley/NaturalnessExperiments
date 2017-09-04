@@ -11,6 +11,7 @@ public class FaultExpression {
 	FaultExpression(ASTNode n){
 		node = n;
 		position = node.getStartPosition();
+		changeID = -1;
 	}
 	
 	FaultExpression(SourceCodeChange change){

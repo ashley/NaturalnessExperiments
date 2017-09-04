@@ -18,7 +18,7 @@ import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.structuredifferencing.StructureNode;
 
 public class DiffCode {
-	public static HashMap<Integer, ASTNode> getDiffASTs(String[] args) throws IOException{
+	public static List<FaultExpression> getDiffASTs(String[] args) throws IOException{
 		//CD process
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
 		StructureNode outcome = distiller.extractClassifiedSourceCodeChanges(new File(args[0]), new File(args[1]));
@@ -31,8 +31,7 @@ public class DiffCode {
 			if(!change.getChangeType().toString().substring(0,7).equals("COMMENT")){
 				//Check if change is an update (only checking changes in syntax for now)
 				if(change.toString().substring(0,6).equals("Update")){
-					System.out.println("originalNode: " + change.getChangedEntity().getOriginalNode());
-					System.out.println("startingPosition: "  +change.getChangedEntity().getStartPosition());
+					//System.out.println("originalNode: " + change.getChangedEntity().getOriginalNode());
 					uniqueChanges.add(new FaultExpression(change));
 				}
 			}
@@ -42,22 +41,20 @@ public class DiffCode {
 		
 		//FaultLocalization information
 		List<FaultExpression> filestmts = EntropyGenerator.convertAST(new File(args[0]));
-		//Stored information
-		HashMap<Integer, ASTNode> filteredStmts = new HashMap<Integer, ASTNode>();
 		
 		//For every change
+		//TODO Could be refactored to O(1) for each stmt
 		for(FaultExpression stmt : uniqueChanges){
 			for(FaultExpression fileStmt: filestmts){
 				if(stmt.equals(fileStmt)){
-					//FIXME fileStmt's node is sometimes node for some reason
-					System.out.println("found: " + fileStmt);
-					//int num = cu.getLineNumber(startingPositions.get(i));
-					//filteredStmts.put(num, node);
+					//System.out.println("found: " + fileStmt);
+					stmt.setChangeID(uniqueChanges.indexOf(stmt));
+					fileStmt.setChangeID(stmt.getChangeID());
 					break;
 				}
 			}
 		}
-		return filteredStmts;
+		return filestmts;
 		
 		
 		
