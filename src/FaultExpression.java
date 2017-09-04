@@ -19,6 +19,21 @@ public class FaultExpression {
 	}
 	
 	@Override
+    public boolean equals(Object o) {
+		if(!(o instanceof FaultExpression)){
+			return false;
+		}
+		FaultExpression exp = (FaultExpression) o;
+		if(exp.getPosition() != this.getPosition()){
+			return false;
+		}
+		if(!(exp.getNode().getNodeType() == (this.getNode().getNodeType()) )){
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
 	public String toString(){
 		return node.toString();
 	}

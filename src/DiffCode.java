@@ -48,7 +48,7 @@ public class DiffCode {
 		//For every change
 		for(FaultExpression stmt : uniqueChanges){
 			for(FaultExpression fileStmt: filestmts){
-				if(stmt.getPosition() == fileStmt.getPosition()){
+				if(stmt.equals(fileStmt)){
 					//FIXME fileStmt's node is sometimes node for some reason
 					System.out.println("found: " + fileStmt);
 					//int num = cu.getLineNumber(startingPositions.get(i));
